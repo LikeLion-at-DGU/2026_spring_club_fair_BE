@@ -21,7 +21,7 @@ class BoothListSerializer(serializers.ModelSerializer):
     division_name = serializers.SerializerMethodField()
     dates = serializers.SerializerMethodField()
     location_name = serializers.CharField(source="location.name", read_only=True)
-    thumbnail_url = serializers.SerializerMethodField()
+    logo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Booth
@@ -33,8 +33,14 @@ class BoothListSerializer(serializers.ModelSerializer):
             "dates",
             "location_name",
             "loc_num",
-            "thumbnail_url",
+            "logo_url",
         ]
+
+    def get_logo_url(self, obj):
+        if not obj.logo:
+            return None
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.logo.url) if request else obj.logo.url
 
     def get_division_name(self, obj):
         return obj.division.name if obj.division else None
@@ -43,13 +49,14 @@ class BoothListSerializer(serializers.ModelSerializer):
         # day 필수 API라서 기본은 해당 day만 포함
         return [str(obj.schedule.date)]
 
+'''
     def get_thumbnail_url(self, obj):
         first_img = obj.images.first()  # order=0
         if not first_img or not first_img.image:
             return None
         request = self.context.get("request")
         return request.build_absolute_uri(first_img.image.url) if request else first_img.image.url
-
+'''
 
 class BoothDetailSerializer(serializers.ModelSerializer):
     booth_id = serializers.IntegerField(source="id", read_only=True)

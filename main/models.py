@@ -69,6 +69,8 @@ class Booth(models.Model):
 
     # 서버가 handle에서 @ 제거한 값으로 url 만들 예정
     instagram_handle = models.CharField(max_length=31, null=True, blank=True)
+    
+    logo = models.ImageField(upload_to="logos/", null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -122,6 +124,17 @@ class TimeTable(models.Model):
 
     team_name = models.CharField(max_length=100)
     category = models.CharField(max_length=50)
+
+    # 부스 있는 공연팀 연결용
+    booth = models.ForeignKey(
+        Booth,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="timetables",
+    )
+
+    # 부스 없는 공연팀 fallback 이미지 (활동사진 1장)
     image = models.ImageField(upload_to="timetable/", null=True, blank=True)
 
     class Meta:
