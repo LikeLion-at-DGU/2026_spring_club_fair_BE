@@ -17,12 +17,14 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-
 from django.conf import settings
 from django.conf.urls.static import static
+from main.views import booths_list, booth_detail
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/booths", booths_list),
+    path("api/booths/<int:booth_id>", booth_detail),
 ]
 
 if settings.DEBUG:
