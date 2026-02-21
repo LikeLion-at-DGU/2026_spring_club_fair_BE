@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Booth
-from .serializers import BoothListSerializer, BoothDetailSerializer
+from .models import Booth, TimeTable, Location
+from .serializers import BoothListSerializer, BoothDetailSerializer, TimeTableItemSerializer
 
 
 @api_view(["GET"])
@@ -98,3 +98,40 @@ def booth_detail(request, booth_id: int):
 
     data = BoothDetailSerializer(booth, context={"request": request}).data
     return Response(data)
+
+
+@api_view(["GET"])
+def timetable_list(request):
+    day = request.GET.get("day")
+    if not day:
+        return Response(
+            {"code": "INVALID_DAY", "message": "day는 YYYY-MM-DD 형식의 필수 파라미터입니다."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # 공연은 만해광장만 -> location_name으로 고정 검색
+    try:
+        manhae = Location.objects.get(name="만해광장")
+    except Location.DoesNotExist:
+        return Response(
+            {"code": "LOCATION_NOT_FOUND", "message": "만해광장 Location 데이터가 없습니다."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    qs = (
+        TimeTable.objects.select_related("schedule", "location")
+        .filter(schedule__date=day, location=manhae)
+        .order_by("start_time")
+    )
+
+    items = TimeTableItemSerializer(qs, many=True, context={"request": request}).data
+
+    results = [
+        {
+            "location_id": manhae.id,
+            "location_name": manhae.name,
+            "items": items,
+        }
+    ]
+
+    return Response({"day": day, "results": results})
