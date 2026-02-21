@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Booth, BoothImage
+from .models import Booth, BoothImage, TimeTable
 
 
 class BoothImageSerializer(serializers.ModelSerializer):
@@ -106,3 +106,46 @@ class BoothDetailSerializer(serializers.ModelSerializer):
         if not handle.startswith("@"):
             handle = "@" + handle
         return {"handle": handle, "url": f"https://instagram.com/{handle.lstrip('@')}"}
+    
+
+class TimeTableItemSerializer(serializers.ModelSerializer):
+    timetable_id = serializers.IntegerField(source="id", read_only=True)
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TimeTable
+        fields = [
+            "timetable_id",
+            "start_time",
+            "end_time",
+            "team_name",
+            "category",
+            "image_url",
+        ]
+
+    def get_image_url(self, obj):
+        """
+        우선순위 정리
+        1) Booth.name == TimeTable.team_name 매칭 후, BoothImage 첫 번째(order=0)
+        2) 없으면 TimeTable.image fallback
+        3) 없으면 null
+        """
+        request = self.context.get("request")
+
+        # 1) Booth 매칭되면: 활동사진 첫 번째 이미지
+        booth = (
+            Booth.objects.select_related("schedule")
+            .prefetch_related("images")
+            .filter(name=obj.team_name, schedule=obj.schedule)
+            .first()
+        )
+        if booth:
+            first_img = booth.images.first()
+            if first_img and first_img.image:
+                return request.build_absolute_uri(first_img.image.url) if request else first_img.image.url
+
+        # 2) fallback: TimeTable.image
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+
+        return None
