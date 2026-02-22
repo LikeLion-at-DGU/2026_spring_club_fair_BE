@@ -18,6 +18,21 @@ def booths_list(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+    # 전체 부스 가져와서 날짜 dict 구성
+    all_booths = Booth.objects.select_related("schedule")
+
+    dates_dict = defaultdict(set)  # 부스별 전체 날짜 dict
+
+    for b in all_booths:
+        key = (
+            b.name,
+            b.location_id,
+            b.booth_type,
+            b.division_id,
+        )
+        dates_dict[key].add(str(b.schedule.date))
+
+    # day 필터
     qs = Booth.objects.select_related("division", "location", "schedule").prefetch_related("images")
     qs = qs.filter(schedule__date=day)
 
@@ -37,9 +52,9 @@ def booths_list(request):
     if q:
         qs = qs.filter(name__icontains=q)
 
-    # loc_num 오름차순 정렬
-    qs = qs.order_by("loc_num")
+    qs = qs.order_by("loc_num")  # loc_num 오름차순 정렬
 
+    # 카드 단위 그룹핑
     grouped = defaultdict(list)
 
     for booth in qs:
@@ -53,28 +68,18 @@ def booths_list(request):
 
     results = []
 
-    for booths in grouped.values():
-        # 현재 day 기준 row (대표 row)
-        representative = booths[0]
+    for key, booths in grouped.items():
+        # 대표 row: loc_num 최소
+        representative = min(booths, key=lambda b: b.loc_num)
 
-        # 해당 name의 전체 날짜 조회
-        all_dates = (
-            Booth.objects.filter(
-                name=representative.name,
-                location=representative.location,
-                booth_type=representative.booth_type,
-                division=representative.division,
-            )
-            .values_list("schedule__date", flat=True)
-            .distinct()
-        )
-
-        dates = sorted([str(d) for d in all_dates])
+        # 전체 운영 날짜 (위에서 만든 dict 사용)
+        dates = sorted(dates_dict.get(key, []))
 
         serializer = BoothListSerializer(
             representative, context={"request": request}
         )
         data = serializer.data
+
         data["dates"] = dates
 
         results.append(data)
