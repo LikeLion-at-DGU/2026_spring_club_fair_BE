@@ -20,12 +20,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from main.views import booths_list, booth_detail, timetable_list
+from quiz.views import QuizListView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/booths", booths_list),
     path("api/booths/<int:booth_id>", booth_detail),
     path("api/timetable", timetable_list),
+
+    path("api/quiz", QuizListView.as_view(), name="quiz-list"),
 ]
 
 if settings.DEBUG:

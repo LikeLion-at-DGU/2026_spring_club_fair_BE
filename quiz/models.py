@@ -13,7 +13,7 @@ class Quiz(models.Model):
           ordering = ['order']
 
      def __str__(self):
-          return f"{self.order}번. {self.question}"
+          return f"Q{self.order}. {self.question}"
 
 
 class QuizOption(models.Model):
@@ -36,4 +36,4 @@ class QuizOption(models.Model):
           verbose_name_plural = "퀴즈 선택지들"
 
      def __str__(self):
-          return f"[{self.quiz.order}번 퀴즈] {self.answer} -> {self.division.name}"
+          return f"[Q{self.quiz.order}] {self.answer} -> {self.division.name}"
