@@ -1,0 +1,45 @@
+name: ✨ Feature Request
+description: 새로운 기능 제안
+title: "[FEAT] "
+labels: ["feature"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ✨ 기능 설명
+        추가하고 싶은 기능을 설명해주세요.
+
+  - type: textarea
+    id: feature-desc
+    attributes:
+      label: 📌 기능 설명
+      placeholder: 어떤 기능인가요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: 🤔 필요한 이유
+      placeholder: 왜 이 기능이 필요한가요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: todo
+    attributes:
+      label: 🛠 작업 내용
+      placeholder: |
+        - [ ] 
+        - [ ] 
+        - [ ] 
+    validations:
+      required: false
+
+  - type: textarea
+    id: reference
+    attributes:
+      label: 🔗 참고 자료
+      placeholder: 관련 링크, 디자인, 레퍼런스 등

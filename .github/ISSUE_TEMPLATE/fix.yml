@@ -1,0 +1,53 @@
+name: 🐞 Fix Report
+description: 버그 수정 이슈
+title: "[FIX] "
+labels: ["fix"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐞 버그 설명
+        발생한 버그를 명확하게 설명해주세요.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: ❗ 발생한 문제
+      placeholder: 어떤 문제가 발생했는지 작성해주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ 기대 결과
+      placeholder: 정상적으로 동작했을 경우의 결과를 작성해주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 🔁 재현 방법
+      placeholder: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 💻 실행 환경
+      placeholder: 예) Chrome 120 / MacOS / Node 18
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: 📎 추가 정보
+      placeholder: 스크린샷, 로그 등
