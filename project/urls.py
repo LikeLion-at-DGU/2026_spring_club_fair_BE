@@ -20,7 +20,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from main.views import booths_list, booth_detail, timetable_list
-from quiz.views import QuizListView
+from quiz.views import *
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -29,6 +29,7 @@ urlpatterns = [
     path("api/timetable", timetable_list),
 
     path("api/quiz", QuizListView.as_view(), name="quiz-list"),
+    path('api/quiz/submit', QuizSubmitView.as_view(), name='quiz-submit'),
 ]
 
 if settings.DEBUG:
