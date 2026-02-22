@@ -1,0 +1,19 @@
+services:
+  web: # Django 애플리케이션 서비스
+    build: .
+    container_name: django_app
+    command: gunicorn project.wsgi:application --bind 0.0.0.0:8000 --workers 2 # Gunicorn을 사용하여 Django 애플리케이션 실행
+    volumes: # 현재 디렉토리를 컨테이너의 /app 디렉토리에 마운트
+      - sqlite_data:/app/data # SQLite DB 파일
+      - staticfiles:/app/staticfiles # 정적 파일
+      - media:/app/media # 미디어 파일
+    ports: # 호스트의 8000 포트를 컨테이너의 8000 포트로 매핑
+      - "8000:8000"
+    env_file: # 환경 변수 파일을 지정
+      - .env
+    restart: always # 컨테이너가 중지되면 자동으로 재시작
+
+volumes:
+  sqlite_data:
+  staticfiles:
+  media:
