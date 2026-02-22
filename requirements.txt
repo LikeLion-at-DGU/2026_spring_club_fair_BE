@@ -1,5 +1,4 @@
 asgiref==3.11.1
-Django==6.0.2
 django-environ==0.13.0
 djangorestframework==3.16.1
 pillow==12.1.1
