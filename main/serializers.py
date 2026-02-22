@@ -92,7 +92,14 @@ class BoothDetailSerializer(serializers.ModelSerializer):
         return obj.division.name if obj.division else None
 
     def get_dates(self, obj):
-        return [str(obj.schedule.date)]
+        qs = Booth.objects.filter(
+            name=obj.name,
+            location=obj.location,
+            booth_type=obj.booth_type,
+            division=obj.division,
+        ).values_list("schedule__date", flat=True).distinct()
+
+        return sorted([str(d) for d in qs])
 
     def get_event(self, obj):
         if not obj.event:
