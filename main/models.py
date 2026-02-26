@@ -60,8 +60,9 @@ class Booth(models.Model):
     short_description = models.CharField(max_length=200, blank=True, default="")
     description = models.TextField(blank=True, default="")
 
-    # 이벤트: DB에는 줄바꿈 텍스트로 저장 (응답에서 split해서 배열로 내려줄 예정)
+    # 이벤트 & 메뉴: DB에는 줄바꿈 텍스트로 저장 (응답에서 split해서 배열로 내려줄 예정)
     event = models.TextField(blank=True, default="")
+    menu = models.TextField(blank=True, default="")
 
     recruit_start = models.DateField(null=True, blank=True)
     recruit_end = models.DateField(null=True, blank=True)
