@@ -71,24 +71,30 @@ class QuizSubmitView(APIView) :
           # 5. 결과 반환 + 부스 정보 리스트
           try:
                target_division = Division.objects.get(id=final_division_id)
-               today_str = timezone.localtime(timezone.now()).strftime('%Y-%m-%d')
-
-               # 내부 부스 조회 함수 호출 (기존 로직 유지)
-               from .views import booths_list 
-               inner_request = request._request
-               qd = QueryDict(mutable=True)
-               qd.update({'division_id': str(target_division.id), 'day': today_str})
-               inner_request.GET = qd
+               booths_qs = Booth.objects.filter(division=target_division)\
+                    .select_related("division", "location", "schedule")\
+                    .prefetch_related("images")\
+                    .order_by("name", "loc_num")
                
-               booths_response = booths_list(inner_request)
+               # 동일한 이름의 부스가 여러 날짜에 걸쳐 있을 경우 1개만 표시
+               unique_booths = {}
+               for b in booths_qs:
+                    if b.name not in unique_booths:
+                         unique_booths[b.name] = b
+               
+               serializer = BoothListSerializer(
+                    unique_booths.values(), 
+                    many=True, 
+                    context={"request": request}
+               )
 
                return Response({
                     "recommended_division": {
                          "id": target_division.id,
                          "name": target_division.name,
                     },
-                    "booths": booths_response.data.get('results', [])
+                    "booths": serializer.data
                }, status=status.HTTP_200_OK)
 
           except Division.DoesNotExist:
-               return Response({"error": "산출된 분과 ID가 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+               return Response({"error": "결과 분과를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
