@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Booth, TimeTable, Location
-from .serializers import BoothListSerializer, BoothDetailSerializer, TimeTableItemSerializer
+from .models import *
+from .serializers import *
 
 
 @api_view(["GET"])
@@ -100,6 +100,11 @@ def booth_detail(request, booth_id: int):
             {"code": "BOOTH_NOT_FOUND", "message": "해당 booth_id의 부스를 찾을 수 없습니다."},
             status=status.HTTP_404_NOT_FOUND,
         )
+
+    # 푸드트럭 타입 분기
+    if booth.booth_type == Booth.BoothType.FOODTRUCK:
+        data = FoodTruckDetailSerializer(booth, context={"request": request}).data
+        return Response(data)
 
     data = BoothDetailSerializer(booth, context={"request": request}).data
     return Response(data)

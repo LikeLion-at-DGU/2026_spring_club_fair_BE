@@ -115,6 +115,72 @@ class BoothDetailSerializer(serializers.ModelSerializer):
         return {"handle": handle, "url": f"https://instagram.com/{handle.lstrip('@')}"}
     
 
+class FoodTruckDetailSerializer(serializers.ModelSerializer):
+    booth_id = serializers.IntegerField(source="id", read_only=True)
+    division_name = serializers.SerializerMethodField()
+    dates = serializers.SerializerMethodField()
+    location_name = serializers.CharField(source="location.name", read_only=True)
+
+    menu = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Booth
+        fields = [
+            "booth_id",
+            "name",
+            "booth_type",
+            "division_name",
+            "dates",
+            "location_name",
+            "loc_num",
+            "menu",
+            "image_url",
+        ]
+
+    def get_division_name(self, obj):
+        return obj.division.name if obj.division else None
+
+    def get_dates(self, obj):
+        qs = Booth.objects.filter(
+            name=obj.name,
+            location=obj.location,
+            booth_type=obj.booth_type,
+            division=obj.division,
+        ).values_list("schedule__date", flat=True).distinct()
+
+        return sorted([str(d) for d in qs])
+
+    def get_menu(self, obj):
+        if not obj.menu:
+            return []
+
+        result = []
+        for line in obj.menu.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+
+            parts = line.split()
+            if len(parts) >= 2:
+                name = " ".join(parts[:-1])
+                price = parts[-1]
+            else:
+                name = line
+                price = None
+
+            result.append({
+                "name": name,
+                "price": price
+            })
+
+        return result
+
+    def get_image_url(self, obj):
+        # 항상 null
+        return None
+    
+
 class TimeTableItemSerializer(serializers.ModelSerializer):
     timetable_id = serializers.IntegerField(source="id", read_only=True)
     image_url = serializers.SerializerMethodField()
