@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from collections import Counter
 from django.http import QueryDict
+from collections import defaultdict
 
 from main.models import *
 from .models import *
@@ -76,14 +77,33 @@ class QuizSubmitView(APIView) :
                     .prefetch_related("images")\
                     .order_by("name", "loc_num")
                
-               # 동일한 이름의 부스가 여러 날짜에 걸쳐 있을 경우 1개만 표시
-               unique_booths = {}
+               grouped_booths = defaultdict(list)
+
+               # 같은 부스 기준으로 그룹화
                for b in booths_qs:
-                    if b.name not in unique_booths:
-                         unique_booths[b.name] = b
+                    key = (
+                         b.name,
+                    )
+                    grouped_booths[key].append(b)
+
+               final_booths = []
+
+               # 날짜 병합
+               for key, booth_list in grouped_booths.items():
+                    first_booth = booth_list[0]
+
+                    # 모든 날짜 + 정렬
+                    all_dates = sorted(
+                         [b.schedule.date for b in booth_list]
+                    )
+
+                    # date를 배열로 
+                    first_booth.merged_dates = all_dates
+
+                    final_booths.append(first_booth)
                
                serializer = BoothListSerializer(
-                    unique_booths.values(), 
+                    final_booths, 
                     many=True, 
                     context={"request": request}
                )

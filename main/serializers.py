@@ -46,6 +46,9 @@ class BoothListSerializer(serializers.ModelSerializer):
         return obj.division.name if obj.division else None
 
     def get_dates(self, obj):
+        if hasattr(obj, "merged_dates"):
+            return obj.merged_dates
+        
         # day 필수 API라서 기본은 해당 day만 포함
         return [str(obj.schedule.date)]
 
