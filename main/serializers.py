@@ -39,7 +39,25 @@ class BoothListSerializer(serializers.ModelSerializer):
         ]
 
     def get_has_detail(self, obj):
-        return True
+
+        # 푸드트럭은 전부 true로 처리
+        if obj.booth_type == Booth.BoothType.FOODTRUCK:
+            return True
+
+        # 상세 관련 텍스트/기간/인스타/로고/이미지 중 하나라도 있으면 true로 처리
+        has_any_text = any([
+            bool(obj.short_description.strip()),
+            bool(obj.description.strip()),
+            bool(obj.event.strip()),
+            bool((obj.recruit_detail or "").strip()),
+            bool((obj.instagram_handle or "").strip()),
+        ])
+
+        has_recruit_date = bool(obj.recruit_start) or bool(obj.recruit_end)
+        has_logo = bool(obj.logo)
+        has_images = obj.images.exists()
+
+        return bool(has_any_text or has_recruit_date or has_logo or has_images)
 
     def get_logo_url(self, obj):
         if not obj.logo:
