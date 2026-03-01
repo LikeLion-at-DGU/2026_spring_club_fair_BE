@@ -1,0 +1,7 @@
+media/
+staticfiles/
+sqlite_data/
+.git
+__pycache__/
+*.zip
+.env
