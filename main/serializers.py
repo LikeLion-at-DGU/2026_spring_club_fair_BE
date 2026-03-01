@@ -22,6 +22,7 @@ class BoothListSerializer(serializers.ModelSerializer):
     dates = serializers.SerializerMethodField()
     location_name = serializers.CharField(source="location.name", read_only=True)
     logo_url = serializers.SerializerMethodField()
+    has_detail = serializers.SerializerMethodField()
 
     class Meta:
         model = Booth
@@ -34,7 +35,11 @@ class BoothListSerializer(serializers.ModelSerializer):
             "location_name",
             "loc_num",
             "logo_url",
+            "has_detail",
         ]
+
+    def get_has_detail(self, obj):
+        return True
 
     def get_logo_url(self, obj):
         if not obj.logo:
