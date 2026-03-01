@@ -2,7 +2,7 @@ name: Deploy Django with Docker
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
 
 jobs:
   build-and-deploy:
@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: pip install -r requirements.txt

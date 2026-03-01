@@ -142,3 +142,14 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "https://dguclubfair.site",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://api.dguclubfair.site",
+    "https://dguclubfair.site",
+    "http://localhost:5173",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
