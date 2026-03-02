@@ -2,7 +2,7 @@ services:
   web: # Django 애플리케이션 서비스
     build: .
     container_name: django_app
-    command: gunicorn project.wsgi:application --bind 0.0.0.0:8000 --workers 2 # Gunicorn을 사용하여 Django 애플리케이션 실행
+    command: gunicorn project.wsgi:application --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS:-2} # Gunicorn을 사용하여 Django 애플리케이션 실행, workers 기본값 2는 현재 운영값 유지한 것
     volumes: # 현재 디렉토리를 컨테이너의 /app 디렉토리에 마운트
       - ./sqlite_data:/app/data # SQLite DB 파일
       - ./staticfiles:/app/staticfiles # 정적 파일

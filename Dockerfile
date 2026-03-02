@@ -10,7 +10,7 @@ COPY . .
 # staticfiles, media 폴더 생성 (없을 경우)
 RUN mkdir -p /app/staticfiles /app/media /app/data
 
-RUN python manage.py collectstatic --noinput
+# RUN python manage.py collectstatic --noinput
 
 # Gunicorn 활용 애플리케이션 실행
 CMD ["gunicorn", "project.wsgi:application", "--bind", "0.0.0.0:8000"]
