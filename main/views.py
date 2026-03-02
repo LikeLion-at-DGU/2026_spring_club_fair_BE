@@ -8,6 +8,8 @@ from rest_framework import status
 from .models import *
 from .serializers import *
 
+from django.http import JsonResponse
+
 
 @api_view(["GET"])
 def booths_list(request):
@@ -145,3 +147,7 @@ def timetable_list(request):
     ]
 
     return Response({"day": day, "results": results})
+
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
