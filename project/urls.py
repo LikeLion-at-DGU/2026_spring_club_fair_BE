@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from main.views import booths_list, booth_detail, timetable_list
+from main.views import booths_list, booth_detail, timetable_list, health_check
 from quiz.views import *
 
 urlpatterns = [
@@ -30,6 +30,8 @@ urlpatterns = [
 
     path("api/quiz", QuizListView.as_view(), name="quiz-list"),
     path('api/quiz/submit', QuizSubmitView.as_view(), name='quiz-submit'),
+
+    path("api/health", health_check),
 ]
 
 if settings.DEBUG:

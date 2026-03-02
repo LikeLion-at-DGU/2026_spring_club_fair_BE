@@ -1,5 +1,9 @@
 FROM python:3.12
 WORKDIR /app
+
+# curl 설치 (healthcheck용)
+RUN apt-get update && apt-get install -y curl
+
 # 시스템 패키지 설치. requirements.txt를 활용한 패키지 설치
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt

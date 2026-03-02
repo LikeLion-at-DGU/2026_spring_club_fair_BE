@@ -12,3 +12,9 @@ services:
     env_file: # 환경 변수 파일을 지정
       - .env
     restart: always # 컨테이너가 중지되면 자동으로 재시작
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
